@@ -20,6 +20,5 @@ async def instance_endpoint(request, instance_id):
 async def instance_endpoint(request, instance_id):
     return json({"status": "deleted", "instance_id": instance_id})
 
-
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True, access_log=True)
