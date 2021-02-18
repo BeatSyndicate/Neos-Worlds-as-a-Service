@@ -9,6 +9,7 @@ tortoise-orm = "*"
 httpx = "*"
 
 [dev-packages]
+pdbpp = "*"
 
 [requires]
 python_version = "3.9"
