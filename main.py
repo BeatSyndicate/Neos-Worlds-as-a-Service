@@ -8,7 +8,7 @@ app = Sanic("NaaS")
 
 DIGITALOCEAN_COMMON_HEADERS = {
     "Content-Type": "application/json",
-    "Authorization": "Bearer b7d03a6947b217efb6f3ec3bd3504582"  # TODO: this is placeholder, actually do auth
+    "Authorization": "Bearer {token}".format(token=os.environ['DO_API_TOKEN'])
 }
 
 
@@ -32,8 +32,8 @@ async def instance_endpoint(request, instance_id):
             "https://api.digitalocean.com/v2/droplets",
             headers=DIGITALOCEAN_COMMON_HEADERS,
             data={
-                "name": "instance_name",
-                "region": "nyc3",
+                "name": "neos-server-{}".format(instance_id),
+                "region": "sfo3",
                 "size": "s-1vcpu-1gb",
                 "image": "ubuntu-16-04-x64",
                 "ssh_keys": [107149],
@@ -42,7 +42,7 @@ async def instance_endpoint(request, instance_id):
                 "user_data": None,
                 "private_networking": None,
                 "volumes": None,
-                "tags": ["web", instance_id]
+                "tags": ["neos", instance_id]
             }
         )
     # TODO: actually check status code
