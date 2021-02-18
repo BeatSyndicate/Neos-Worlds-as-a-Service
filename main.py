@@ -1,16 +1,22 @@
-from sanic import Sanic
+from sanic import Sanic, response
+from sanic_openapi import swagger_blueprint
 from sanic.response import json
 from sanic.log import logger
 import httpx
 import os
 
 app = Sanic("NaaS")
+app.blueprint(swagger_blueprint)
+
 
 DIGITALOCEAN_COMMON_HEADERS = {
     "Content-Type": "application/json",
     "Authorization": "Bearer {token}".format(token=os.environ['DO_API_TOKEN'])
 }
 
+@app.route("/")
+async def root_path(request):
+    return response.redirect('/swagger')
 
 @app.route("/neos/instance/<instance_id>", methods=['GET'])
 async def instance_get_endpoint(request, instance_id):

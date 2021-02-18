@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "f298a05f222d9e2e469237480651d7efac638003cde19e2d55807488b203724a"
+            "sha256": "ba1341318845e7f20a7b925fa54e2554be75d88d74d3d5eddb6a02e69e8f29fc"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -165,6 +165,13 @@
             ],
             "index": "pypi",
             "version": "==20.12.2"
+        },
+        "sanic-openapi": {
+            "hashes": [
+                "sha256:0ddd11983443d4136ef3e93146cbf89a7196533eb198d72f7489b840cf4016c4"
+            ],
+            "index": "pypi",
+            "version": "==0.6.2"
         },
         "sniffio": {
             "hashes": [
