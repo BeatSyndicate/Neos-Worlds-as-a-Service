@@ -16,7 +16,7 @@ DIGITALOCEAN_COMMON_HEADERS = {
 async def instance_get_endpoint(request, instance_id):
     # logger.info("route='/neos/instance/%s", instance_id)
     async with httpx.AsyncClient() as client:
-        r = await client.post(
+        r = await client.get(
             "https://api.digitalocean.com/v2/droplets?tag_name={instance_id}".format(instance_id=instance_id),
             headers=DIGITALOCEAN_COMMON_HEADERS,
         )
@@ -24,8 +24,17 @@ async def instance_get_endpoint(request, instance_id):
         logger.info("request={}".format(r.request.__dict__))
         logger.error("response={}".format(r.json()))
         return json({"status": "error", "message": r.reason_phrase})
-    else:
-        return json({"status": "healthy", "instance_id": instance_id, "log_websocket": ""})
+    droplets = r.json()['droplets']
+    if len(droplets) > 1:
+        return json({"status": "error", "message": "More than one droplet matches that id. id={}".format(instance_id)})
+    if droplets[0]["status"] == "new":
+        return json({"status": "instantiating", "instance_id": instance_id})
+    if droplets[0]["status"] != "active":
+        return json({"status": "error",
+                     "message": "The server's status does not equal 'active'. status={}"
+                    .format(droplets[0]["status"])})
+    logger.info("response={}".format(r.json()))
+    return json({"status": "healthy", "instance_id": instance_id})
 
 
 # Unfortunately Neos lacks a DELETE HTTP request logix node so we have to put the verb in the method.
@@ -57,7 +66,7 @@ async def instance_create_endpoint(request, instance_id):
 @app.route("/neos/instance/<instance_id>/delete", methods=['POST'])
 async def instance_delete_endpoint(request, instance_id):
     async with httpx.AsyncClient() as client:
-        r = await client.post(
+        r = await client.delete(
             "https://api.digitalocean.com/v2/droplets?tag_name={instance_id}".format(instance_id=instance_id),
             headers=DIGITALOCEAN_COMMON_HEADERS
         )
