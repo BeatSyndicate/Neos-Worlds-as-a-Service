@@ -2,6 +2,7 @@ from sanic import Sanic
 from sanic.response import json
 from sanic.log import logger
 import httpx
+import os
 
 app = Sanic("NaaS")
 
@@ -61,4 +62,4 @@ async def instance_endpoint(request, instance_id):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000, debug=True, access_log=True)
+    app.run(host="0.0.0.0", port=8000, debug=True, access_log=True, workers=os.cpu_count())
