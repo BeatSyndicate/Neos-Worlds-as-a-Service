@@ -8,15 +8,16 @@ import os
 app = Sanic("NaaS")
 app.blueprint(swagger_blueprint)
 
-
 DIGITALOCEAN_COMMON_HEADERS = {
     "Content-Type": "application/json",
     "Authorization": "Bearer {token}".format(token=os.environ['DO_API_TOKEN'])
 }
 
-@app.route("/")
+
+@app.route("/", methods=['GET'])
 async def root_path(request):
     return response.redirect('/swagger')
+
 
 @app.route("/neos/instance/<instance_id>", methods=['GET'])
 async def instance_get_endpoint(request, instance_id):
@@ -46,6 +47,11 @@ async def instance_get_endpoint(request, instance_id):
 # Unfortunately Neos lacks a DELETE HTTP request logix node so we have to put the verb in the method.
 @app.route("/neos/instance/<instance_id>/create", methods=['POST'])
 async def instance_create_endpoint(request, instance_id):
+    data = request.json
+    if 'user' not in data.keys():
+        return response.HTTPResponse("Missing 'user' json payload parameter.", status=400)
+    if 'lifetime' not in data.keys():
+        return response.HTTPResponse("Missing 'lifetime' json payload parameter.", status=400)
     async with httpx.AsyncClient() as client:
         r = await client.post(
             "https://api.digitalocean.com/v2/droplets",
@@ -57,7 +63,7 @@ async def instance_create_endpoint(request, instance_id):
                 "image": "ubuntu-16-04-x64",
                 "ipv6": True,
                 "monitoring": True,
-                "tags": ["neos", instance_id]
+                "tags": ["neos", f"instance_ID:{instance_id}", f"lifetime:{data['lifetime']}", f"user:{data['user']}"]
             }
         )
         if r.is_error:
