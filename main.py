@@ -1,17 +1,17 @@
+import asyncio
+from functools import partial
+
 from sanic import Sanic, response
 from sanic_openapi import swagger_blueprint
 from sanic.response import json
 from sanic.log import logger
+from digitalocean_auth import DIGITALOCEAN_COMMON_HEADERS
+import vm_cleanup
 import httpx
 import os
 
 app = Sanic("NaaS")
 app.blueprint(swagger_blueprint)
-
-DIGITALOCEAN_COMMON_HEADERS = {
-    "Content-Type": "application/json",
-    "Authorization": "Bearer {token}".format(token=os.environ['DO_API_TOKEN'])
-}
 
 
 @app.route("/", methods=['GET'])
@@ -63,7 +63,7 @@ async def instance_create_endpoint(request, instance_id):
                 "image": "ubuntu-16-04-x64",
                 "ipv6": True,
                 "monitoring": True,
-                "tags": ["neos", f"instance_ID:{instance_id}", f"lifetime:{data['lifetime']}", f"user:{data['user']}"]
+                "tags": ["neos", f"instance_id:{instance_id}", f"lifetime:{data['lifetime']}", f"user:{data['user']}"]
             }
         )
         if r.is_error:
@@ -90,5 +90,11 @@ async def instance_delete_endpoint(request, instance_id):
         return json({"status": "deleted", "instance_id": instance_id})
 
 
+@app.listener('after_server_start')
+async def schedule_jobs(app, loop):
+    loop.call_later(600, partial(vm_cleanup.schedule_vm_cleanup, loop))
+
+
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=8000, debug=True, access_log=True, workers=os.cpu_count())
+    # Warning: Don't use workers or scheduled jobs will be executed more than one at a time.
+    app.run(host="127.0.0.1", port=8000, debug=True, access_log=True)

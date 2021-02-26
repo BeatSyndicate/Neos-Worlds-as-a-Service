@@ -8,6 +8,7 @@ sanic = "*"
 tortoise-orm = "*"
 httpx = "*"
 sanic-openapi = "*"
+python-dateutil = "*"
 
 [dev-packages]
 pdbpp = "*"
