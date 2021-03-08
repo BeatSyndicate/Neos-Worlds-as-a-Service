@@ -1,0 +1,21 @@
+{
+  "variables": {
+    "do_api_token": "{{env `DIGITALOCEAN_API_TOKEN`}}"
+  },
+
+  "builders": [{
+    "type": "digitalocean",
+    "api_token": "{{user `do_api_token`}}",
+    "size": "s-1vcpu-1gb",
+    "region": "sfo3",
+    "image": "ubuntu-20-04-x64",
+    "droplet_name": "packer-test",
+    "ssh_username": "root",
+    "snapshot_name": "build-with-packer-{{timestamp}}"
+  }],
+
+  "provisioners": [{
+    "type": "shell",
+    "script": "install-script.sh"
+  }]
+}
