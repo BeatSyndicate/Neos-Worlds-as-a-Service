@@ -8,6 +8,7 @@ from sanic.log import logger
 from digitalocean_auth import DIGITALOCEAN_COMMON_HEADERS
 import vm_cleanup
 import httpx
+from dateutil.parser import parse
 import json
 
 app = Sanic("NaaS")
@@ -76,6 +77,21 @@ async def get_ssh_key_ids():
     return [k['id'] for k in r.json()['ssh_keys']]
 
 
+async def get_base_images():
+    async with httpx.AsyncClient() as client:
+        r = await client.get(
+            "https://api.digitalocean.com/v2/images?private=true",
+            headers=DIGITALOCEAN_COMMON_HEADERS,
+        )
+    if r.is_error:
+        logger.info("request={}".format(r.request.__dict__))
+        logger.error("response={}".format(r.json()))
+        return response.json({"status": "error", "message": r.reason_phrase})
+    base_images = [i for i in r.json()['images'] if i['name'].startswith('baseimage')]
+    latest_base = sorted(base_images, key=lambda x: x['created_at'], reverse=True)[0]
+    return latest_base
+
+
 # Unfortunately Neos lacks a DELETE HTTP request logix node so we have to put the verb in the method.
 @app.route("/neos/instance/<instance_id>/create", methods=['POST'])
 async def instance_create_endpoint(request, instance_id):
@@ -87,6 +103,7 @@ async def instance_create_endpoint(request, instance_id):
     if 'lifetime' not in data.keys():
         return response.HTTPResponse("Missing 'lifetime' json payload parameter.", status=400)
     ssh_keys = await get_ssh_key_ids()
+    base_image = await get_base_images()
     async with httpx.AsyncClient() as client:
         r = await client.post(
             "https://api.digitalocean.com/v2/droplets",
@@ -95,7 +112,7 @@ async def instance_create_endpoint(request, instance_id):
                 "name": "neos-server-{}".format(instance_id),
                 "region": "sfo3",
                 "size": "s-1vcpu-1gb",
-                "image": "ubuntu-16-04-x64",
+                "image": base_image['id'],
                 "ipv6": True,
                 "monitoring": True,
                 "tags": ["neos", f"instance_id:{instance_id}", f"lifetime:{data['lifetime']}", f"user:{data['user']}"],
