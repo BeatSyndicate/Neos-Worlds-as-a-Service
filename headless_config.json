@@ -1,0 +1,24 @@
+    {
+      "tickRate": 60.0,
+      "usernameOverride": null,
+      "loginCredential": null,
+      "loginPassword": null,
+      "startWorlds": [
+        {
+          "sessionName": "FurcateHeadlessTest",
+          "description": "Testing the headless server. Don't expect anything.",
+          "maxUsers": 32,
+          "accessLevel": "Anyone",
+          "tags": null,
+          "mobileFriendly": false,
+          "loadWorldURL": null,
+          "loadWorldPresetName": "SpaceWorld",
+          "adminUsernames": ["Furcate", "DMX"],
+          "autoRecover": true,
+          "idleRestartInterval": 120,
+          "forcedRestartInterval": -1.0
+        }
+      ],
+      "dataFolder": null,
+      "cacheFolder": null
+    }
