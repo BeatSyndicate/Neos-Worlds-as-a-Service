@@ -1,6 +1,7 @@
 {
   "variables": {
-    "do_api_token": "{{env `DIGITALOCEAN_API_TOKEN`}}"
+    "do_api_token": "{{env `DIGITALOCEAN_API_TOKEN`}}",
+    "baseimage": "ubuntu-20-04-x64"
   },
 
   "builders": [{
@@ -8,10 +9,10 @@
     "api_token": "{{user `do_api_token`}}",
     "size": "s-1vcpu-1gb",
     "region": "sfo3",
-    "image": "ubuntu-20-04-x64",
-    "droplet_name": "packer-test",
+    "image": "{{ user `baseimage` }}",
+    "droplet_name": "baseimage-{{ user `baseimage` }}",
     "ssh_username": "root",
-    "snapshot_name": "build-with-packer-{{timestamp}}"
+    "snapshot_name": "baseimage-{{ user `baseimage` }}-{{timestamp}}"
   }],
 
   "provisioners": [{
