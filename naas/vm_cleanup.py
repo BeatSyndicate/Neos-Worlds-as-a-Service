@@ -56,7 +56,7 @@ def _parse_instance_id_tag(tags: List[str]) -> Optional[str]:
 def _delete_droplet(instance_id: str):
     with httpx.Client() as client:
         r = client.delete(
-            f"https://api.digitalocean.com/v2/droplets?tag_name={instance_id}",
+            f"https://api.digitalocean.com/v2/droplets?tag_name=instance_id:{instance_id}",
             headers=DIGITALOCEAN_COMMON_HEADERS
         )
         if r.is_error:

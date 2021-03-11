@@ -34,7 +34,7 @@ async def instance_get_endpoint(request, instance_id):
     # logger.info("route='/neos/instance/%s", instance_id)
     async with httpx.AsyncClient() as client:
         r = await client.get(
-            "https://api.digitalocean.com/v2/droplets?tag_name={instance_id}".format(instance_id=instance_id),
+            "https://api.digitalocean.com/v2/droplets?tag_name=instance_id:{instance_id}".format(instance_id=instance_id),
             headers=DIGITALOCEAN_COMMON_HEADERS,
         )
     if r.is_error:
