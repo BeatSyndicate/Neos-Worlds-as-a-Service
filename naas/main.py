@@ -1,15 +1,13 @@
-import asyncio
 import base64
 from functools import partial
 
-from sanic import Sanic, response
-from sanic_openapi import swagger_blueprint
-from sanic.log import logger
-from digitalocean_auth import DIGITALOCEAN_COMMON_HEADERS
-import vm_cleanup
 import httpx
-from dateutil.parser import parse
-import json
+from sanic import Sanic, response
+from sanic.log import logger
+from sanic_openapi import swagger_blueprint
+
+import vm_cleanup
+from digitalocean_auth import DIGITALOCEAN_COMMON_HEADERS
 
 app = Sanic("NaaS")
 app.blueprint(swagger_blueprint)
