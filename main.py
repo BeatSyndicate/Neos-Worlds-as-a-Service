@@ -16,22 +16,13 @@ app.blueprint(swagger_blueprint)
 
 
 def generate_cloud_init() -> str:
-    # The cloud_init config has to be yaml, but converting it back to a string with pyyaml after passing in
-    # secrets isn't easily possible. So instead, let's just use string interpolation to pass the secrets and
-    # base64 the json file so we don't have to bother escaping the json curly braces.
-    with open("secrets.json") as f:
-        secrets = json.load(f)
-
     with open("headless_config.json") as f:
         base64_headless_config = base64.b64encode(f.read().encode('utf-8')).decode('utf-8')
 
     with open("cloud_init.yaml") as f:
         cloud_init_template = f.read()
 
-    return cloud_init_template.format(base64_headless_config=base64_headless_config, steam_pass=secrets['steam_pass'],
-                                      neos_beta_pass=secrets['neos_beta_pass'], neos_pass=secrets['neos_pass'])
-
-
+    return cloud_init_template.format(base64_headless_config=base64_headless_config)
 
 
 @app.route("/", methods=['GET'])
@@ -53,13 +44,14 @@ async def instance_get_endpoint(request, instance_id):
         return response.json({"status": "error", "message": r.reason_phrase})
     droplets = r.json()['droplets']
     if len(droplets) > 1:
-        return response.json({"status": "error", "message": "More than one droplet matches that id. id={}".format(instance_id)})
+        return response.json(
+            {"status": "error", "message": "More than one droplet matches that id. id={}".format(instance_id)})
     if droplets[0]["status"] == "new":
         return response.json({"status": "instantiating", "instance_id": instance_id})
     if droplets[0]["status"] != "active":
         return response.json({"status": "error",
-                     "message": "The server's status does not equal 'active'. status={}"
-                    .format(droplets[0]["status"])})
+                              "message": "The server's status does not equal 'active'. status={}"
+                             .format(droplets[0]["status"])})
     logger.info("response={}".format(r.json()))
     return response.json({"status": "healthy", "instance_id": instance_id})
 

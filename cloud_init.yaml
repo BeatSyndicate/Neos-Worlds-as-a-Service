@@ -12,32 +12,6 @@ write_files:
   encoding: b64
   content: {base64_headless_config}
 
-- owner: steam:steam
-  path: /home/steam/start_neos.sh
-  permissions: '0700'
-  content: |
-    #!/usr/bin/env bash
-    /usr/games/steamcmd +@sSteamCmdForcePlatformType linux +login beatsyndicatevr {steam_pass} +app_update 740250 -beta headless-client -betapassword {neos_beta_pass} validate +app_license_request 740250 +quit
-    cd /home/steam/.steam/steamapps/common/NeosVR
-    ./Neos.exe --user beatsyndicatevr --password {neos_pass} --config /home/steam/headless_config.json
-- path: /lib/systemd/system/neos.service
-  owner: root:root
-  permissions: '0644'
-  content: |
-    [Unit]
-    Description=Neos service
-    Requires=network-online.target
-
-    [Service]
-    Type=forking
-    User=steam
-    ExecStart=/usr/bin/tmux new -d -s neos '/home/steam/start_neos.sh > neos_start.log 2>&1'
-    ExecStop=/usr/bin/tmux send-keys -t neos "shutdown" Enter
-    # Restart=on-failure
-    # RestartSec=30
-
-    [Install]
-    WantedBy=multi-user.target
 runcmd:
   - echo "runcmd has been run!!!"]
   - systemctl restart systemd-journald

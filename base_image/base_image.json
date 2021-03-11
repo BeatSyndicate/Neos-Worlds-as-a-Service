@@ -15,8 +15,33 @@
     "snapshot_name": "baseimage-{{ user `baseimage` }}-{{timestamp}}"
   }],
 
-  "provisioners": [{
-    "type": "shell",
-    "script": "install-script.sh"
-  }]
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "provision.sh"
+    },
+    {
+      "type": "file",
+      "source": "start_neos.sh",
+      "destination": "/home/steam/start_neos.sh"
+    },
+    {
+      "type": "file",
+      "source": "secrets.env",
+      "destination": "/home/steam/secrets.env"
+    },
+    {
+      "type": "file",
+      "source": "neos.service",
+      "destination": "/lib/systemd/system/neos.service"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "chmod 700 /home/steam/start_neos.sh && chown steam:steam /home/steam/start_neos.sh",
+        "chmod 500 /home/steam/secrets.env && chown steam:steam /home/steam/secrets.env",
+        "chmod 644 /lib/systemd/system/neos.service && chown root:root /lib/systemd/system/neos.service"
+      ]
+    }
+  ]
 }
