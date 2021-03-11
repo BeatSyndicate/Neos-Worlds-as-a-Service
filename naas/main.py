@@ -16,10 +16,11 @@ app.blueprint(swagger_blueprint)
 
 
 def generate_cloud_init() -> str:
-    with open("headless_config.json") as f:
+    config_template_path = "server_config_templates"
+    with open(f"{config_template_path}/headless_config.json") as f:
         base64_headless_config = base64.b64encode(f.read().encode('utf-8')).decode('utf-8')
 
-    with open("cloud_init.yaml") as f:
+    with open(f"{config_template_path}/cloud_init.yaml") as f:
         cloud_init_template = f.read()
 
     return cloud_init_template.format(base64_headless_config=base64_headless_config)
