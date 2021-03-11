@@ -3,6 +3,12 @@ A webservice which integrates with Neos and spins up new machines to provide new
 
 ## Building the Base Image
 The base image which NaaS instantiates every droplet can be rebuilt with packer using the following command:
-1. Fill in secrets.env
-2. `cd base_image`
-3. `DIGITALOCEAN_API_TOKEN=<My DO API token> ./build_base_image.sh`
+```
+export STEAM_PASS="the steam password"
+export NEOS_BETA_PASS="the neos headless server password"
+export NEOS_PASS="the neos password"
+export DIGITALOCEAN_API_TOKEN="a digital ocean api token"
+cd base_image
+./build_base_image.sh
+```
+
