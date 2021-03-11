@@ -40,20 +40,20 @@ async def instance_get_endpoint(request, instance_id):
     if r.is_error:
         logger.info("request={}".format(r.request.__dict__))
         logger.error("response={}".format(r.json()))
-        return response.json({"status": "error", "message": r.reason_phrase}).status(500)
+        return response.json({"status": "error", "message": r.reason_phrase}, status=500)
     droplets = r.json()['droplets']
     if len(droplets) == 0:
         return response.json(
-            {"status": "error", "message": "Not droplets match that id. id={}".format(instance_id)}).status(400)
+            {"status": "error", "message": "Not droplets match that id. id={}".format(instance_id)}, status=400)
     if len(droplets) > 1:
         return response.json(
-            {"status": "error", "message": "More than one droplet matches that id. id={}".format(instance_id)}).status(400)
+            {"status": "error", "message": "More than one droplet matches that id. id={}".format(instance_id)}, status=400)
     if droplets[0]["status"] == "new":
-        return response.json({"status": "instantiating", "instance_id": instance_id})
+        return response.json({"status": "instantiating", "instance_id": instance_id}, status=200)
     if droplets[0]["status"] != "active":
         return response.json({"status": "error",
                               "message": "The server's status does not equal 'active'. status={}"
-                             .format(droplets[0]["status"])})
+                             .format(droplets[0]["status"])}, status=500)
     logger.info("response={}".format(r.json()))
     return response.json({"status": "healthy", "instance_id": instance_id})
 
@@ -67,7 +67,8 @@ async def get_ssh_key_ids():
     if r.is_error:
         logger.info("request={}".format(r.request.__dict__))
         logger.error("response={}".format(r.json()))
-        return response.json({"status": "error", "message": r.reason_phrase})
+        # TODO handle this error correctly
+        return response.json({"status": "error", "message": r.reason_phrase}, status=500)
     return [k['id'] for k in r.json()['ssh_keys']]
 
 
@@ -80,7 +81,8 @@ async def get_base_images():
     if r.is_error:
         logger.info("request={}".format(r.request.__dict__))
         logger.error("response={}".format(r.json()))
-        return response.json({"status": "error", "message": r.reason_phrase})
+        # TODO handle this error correctly
+        return response.json({"status": "error", "message": r.reason_phrase}, status=500)
     base_images = [i for i in r.json()['images'] if i['name'].startswith('baseimage')]
     latest_base = sorted(base_images, key=lambda x: x['created_at'], reverse=True)[0]
     return latest_base
@@ -117,9 +119,9 @@ async def instance_create_endpoint(request, instance_id):
         if r.is_error:
             logger.info("request={}".format(r.request.__dict__))
             logger.error("response={}".format(r.json()))
-            return response.json({"status": "error", "message": r.reason_phrase})
+            return response.json({"status": "error", "message": r.reason_phrase}, status=500)
         else:
-            return response.json({"status": "created", "instance_id": instance_id})
+            return response.json({"status": "created", "instance_id": instance_id}, status=201)
 
 
 # Unfortunately Neos lacks a DELETE HTTP request logix node so we have to put the verb in the method.
@@ -133,7 +135,7 @@ async def instance_delete_endpoint(request, instance_id):
     if r.is_error:
         logger.info("request={}".format(r.request.__dict__))
         logger.error("response={}".format(r.json()))
-        return response.json({"status": "error", "message": r.reason_phrase})
+        return response.json({"status": "error", "message": r.reason_phrase}, status=500)
     else:
         return response.json({"status": "deleted", "instance_id": instance_id})
 
@@ -145,4 +147,4 @@ async def schedule_jobs(app, loop):
 
 if __name__ == "__main__":
     # Warning: Don't use workers or scheduled jobs will be executed more than one at a time.
-    app.run(host="127.0.0.1", port=8000, debug=True, access_log=True)
+    app.run(host="0.0.0.0", port=8000, debug=True, access_log=True)
