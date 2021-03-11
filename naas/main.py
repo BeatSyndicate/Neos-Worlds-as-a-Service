@@ -5,6 +5,8 @@ import httpx
 from sanic import Sanic, response
 from sanic.log import logger
 from sanic_openapi import swagger_blueprint
+import json
+import os
 
 import vm_cleanup
 from digitalocean_auth import DIGITALOCEAN_COMMON_HEADERS
@@ -16,7 +18,10 @@ app.blueprint(swagger_blueprint)
 def generate_cloud_init() -> str:
     config_template_path = "server_config_templates"
     with open(f"{config_template_path}/headless_config.json") as f:
-        base64_headless_config = base64.b64encode(f.read().encode('utf-8')).decode('utf-8')
+        headless_config = json.load(f)
+        headless_config['loginCredential'] = os.environ['NEOS_USER']
+        headless_config['loginPassword'] = os.environ['NEOS_PASS']
+        base64_headless_config = base64.b64encode(json.dumps(headless_config).encode('utf-8')).decode('utf-8')
 
     with open(f"{config_template_path}/cloud_init.yaml") as f:
         cloud_init_template = f.read()
