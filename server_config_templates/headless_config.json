@@ -1,24 +1,50 @@
+{
+  "comment": null,
+  "tickRate": 60.0,
+  "maxConcurrentAssetTransfers": 4,
+  "usernameOverride": null,
+  "loginCredential": "",
+  "loginPassword": "",
+  "startWorlds": [
     {
-      "tickRate": 60.0,
-      "usernameOverride": null,
-      "loginCredential": null,
-      "loginPassword": null,
-      "startWorlds": [
-        {
-          "sessionName": "FurcateHeadlessTest",
-          "description": "Testing the headless server. Don't expect anything.",
-          "maxUsers": 32,
-          "accessLevel": "Anyone",
-          "tags": null,
-          "mobileFriendly": false,
-          "loadWorldURL": null,
-          "loadWorldPresetName": "SpaceWorld",
-          "adminUsernames": ["Furcate", "DMX"],
-          "autoRecover": true,
-          "idleRestartInterval": 120,
-          "forcedRestartInterval": -1.0
-        }
+      "isEnabled": true,
+      "sessionName": "BeatSyndicateVR",
+      "customSessionId": null,
+      "description": "Testing the headless server. Don't expect anything. Under construction.",
+      "maxUsers": 32,
+      "accessLevel": "Anyone",
+      "hideFromPublicListing": false,
+      "tags": [
+        "beatsyndicate",
+        "music"
       ],
-      "dataFolder": null,
-      "cacheFolder": null
+      "mobileFriendly": false,
+      "loadWorldURL": null,
+      "saveAsOwner": null,
+      "loadWorldPresetName": "SpaceWorld",
+      "forcePort": null,
+      "keepOriginalRoles": false,
+      "defaultUserRoles": {
+        "furcate": "Admin",
+        "dmx": "Admin"
+      },
+      "autoInviteUsernames": [
+        "furcate",
+        "dmx"
+      ],
+      "autoInviteMessage": null,
+      "autoRecover": true,
+      "idleRestartInterval": 120.0,
+      "forcedRestartInterval": -1.0,
+      "saveOnExit": false,
+      "autosaveInterval": -1.0,
+      "awayKickMinutes": -1.0,
+      "autoSleep": true
     }
+  ],
+  "dataFolder": null,
+  "cacheFolder": null,
+  "allowedUrlHosts": null,
+  "autoSpawnItems": null,
+  "metamovieRoles": null
+}
