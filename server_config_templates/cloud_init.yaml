@@ -13,14 +13,8 @@ write_files:
   content: {base64_headless_config}
 
 runcmd:
-  - echo "runcmd has been run!!!"]
-  - systemctl restart systemd-journald
+  - [ systemctl, restart, systemd-journald ]
   - [ systemctl, daemon-reload ]
   - [ systemctl, enable, neos.service ]
   - [ systemctl, start, --no-block, neos.service ]
-# Update Steam and the game
-  # - /bin/bash /var/lib/cloud/scripts/per-once/launch_neos.sh
 final_message: "The system is finally up, after $UPTIME seconds"
-#  phone_home:
-#url: http://my.example.com/$INSTANCE_ID/
-#post: [ pub_key_dsa, pub_key_rsa, pub_key_ecdsa, instance_id ]

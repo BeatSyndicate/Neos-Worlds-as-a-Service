@@ -8,8 +8,6 @@ User=steam
 WorkingDirectory=/home/steam
 ExecStart=/usr/bin/tmux new -d -s neos '/home/steam/start_neos.sh ; /usr/bin/bash -i'
 ExecStop=/usr/bin/tmux send-keys -t neos "shutdown" Enter
-# Restart=on-failure
-# RestartSec=30
 
 [Install]
 WantedBy=multi-user.target
