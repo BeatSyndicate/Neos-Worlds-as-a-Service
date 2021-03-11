@@ -40,11 +40,14 @@ async def instance_get_endpoint(request, instance_id):
     if r.is_error:
         logger.info("request={}".format(r.request.__dict__))
         logger.error("response={}".format(r.json()))
-        return response.json({"status": "error", "message": r.reason_phrase})
+        return response.json({"status": "error", "message": r.reason_phrase}).status(500)
     droplets = r.json()['droplets']
+    if len(droplets) == 0:
+        return response.json(
+            {"status": "error", "message": "Not droplets match that id. id={}".format(instance_id)}).status(400)
     if len(droplets) > 1:
         return response.json(
-            {"status": "error", "message": "More than one droplet matches that id. id={}".format(instance_id)})
+            {"status": "error", "message": "More than one droplet matches that id. id={}".format(instance_id)}).status(400)
     if droplets[0]["status"] == "new":
         return response.json({"status": "instantiating", "instance_id": instance_id})
     if droplets[0]["status"] != "active":
