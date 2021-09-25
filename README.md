@@ -1,6 +1,8 @@
 # Neos-as-a-Service
 A webservice which integrates with Neos and spins up new machines to provide new headless Neos instances. 
 
+[NOTICE] This project has been essentially abandoned as I don't have the time to maintain or run it.
+
 ## Building the Base Image
 The base image which NaaS instantiates every droplet can be rebuilt with packer using the following command:
 ```
